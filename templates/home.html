@@ -7,19 +7,21 @@
 
 <ul>
   {% for item in all_items %}
-    <li> {{ item.title }}, {{item.note}}, {{item.link}}
+    <li> {{ item.title }}, {{item.blurb}}, <br> {{item.link}}
       <form action="/deleteMemento/{{item.id}}/" style="display: inline;" method="post">{% csrf_token %}
           <input type="submit" value="Remove"/>
       </form>
     </li>
+
   {% endfor %}
 
 </ul>
 
 <form action="/addMemento/" method="post">{% csrf_token %}
-    <input type="text" name="title"/>
+    <!-- <input type="text" name="title"/> -->
     <input type="text" name="note"/>
     <input type="text" name="link"/>
+
     <input type="submit" value="Add"/>
 </form>
 

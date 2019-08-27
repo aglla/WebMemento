@@ -14,13 +14,16 @@ def Hello(request):
     return render(request, 'home.html', {'all_items': all_memento_items})
 
 def addMemento(request):
-    newtitle = request.POST['title']
+    #newtitle = request.POST['title']
     newnote = request.POST['note']
     newlink = request.POST['link']
 
-    scrapePage(newlink)
+    resultDict = scrapePage(newlink)
+    print("hello...")
+    print(resultDict)
+    #resultDict['title']
 
-    new_memento = MementoItem(title=newtitle,note=newnote,link=newlink)
+    new_memento = MementoItem(title=resultDict['title'],blurb=resultDict['description'],note=newnote,link=newlink)
     new_memento.save()
     return HttpResponseRedirect('/home/')
 
@@ -38,28 +41,35 @@ def scrapePage(link):
     titleInfo = soup.find("meta", property="og:title")
     descInfo = soup.find("meta", property="og:description")
 
-    resultDict = {"title": None, "description": None}
+    resultDict = {"title": None, "description": None, "info1": None, "info2": None}
 
     if(titleInfo != None):
         title = titleInfo['content']
+        resultDict['title'] = title
         print("title: " + title)
     else:
         print("No title meta data found")
 
     if(descInfo != None):
         desc = descInfo['content']
+        resultDict['description'] = desc
         print("desc: " + desc)
     else:
         print("No description meta data found")
 
-    if(True):#(titleInfo == None and descInfo == None):
+    if(titleInfo == None):
         spaninfo = soup.find_all('span',limit=10)
         parainfo = soup.find_all('p',limit=10)
-        print("spans:")
-        for s in spaninfo:
-            print(s.getText())
-            print("\n")
-        print("paragraphs:")
-        for p in parainfo:
-            print(p.getText())
-            print("\n")
+        analyzeTags(spaninfo, parainfo)
+
+    print(resultDict)
+    return resultDict
+
+
+def analyzeTags(spaninfo, parainfo):
+
+    print("analyzetags")
+    spans = [s.getText() for s in spaninfo]
+    paras = [p.getText() for p in parainfo]
+    print(spans)
+    print(paras)
